@@ -6,10 +6,22 @@
 <body>
     <h1>All Courses</h1>
     <a th:href="@{/admin/courses/new}">+ Add New Course</a>
+    <hr/>
+
     <ul>
         <li th:each="course : ${courses}">
-            <b th:text="${course.title}">Course title</b> - 
-            <span th:text="${course.description}">Description</span>
+            <b th:text="${course.title}">Course title</b><br/>
+            <span th:text="${course.description}">Description</span><br/>
+
+            <!-- Optional: show number of modules -->
+            <span th:text="'Modules: ' + ${#lists.size(course.modules)}">Modules: 0</span><br/>
+
+            <!-- Add module button -->
+            <a th:href="@{'/admin/courses/' + ${course.id} + '/modules/new'}">
+                ➕ Add Module
+            </a>
+
+            <hr/>
         </li>
     </ul>
 </body>
