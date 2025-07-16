@@ -1,0 +1,15 @@
+# Build output
+/target/
+
+# Logs
+*.log
+
+# IDE settings
+*.iml
+.idea/
+
+# System files
+.DS_Store
+
+# Application config
+application.properties
