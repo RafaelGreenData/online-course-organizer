@@ -2,13 +2,12 @@ package com.oco.onlinecourseorganizer.model;
 
 import jakarta.persistence.*;
 
-// This annotation tells JPA to map this class to a database table
-@Entity
-@Table(name = "users") // Custom name for the database table
+@Entity // tells Spring this is a database entity
+@Table(name = "users") // table name in MySQL
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY) // Auto-increment ID
+    @GeneratedValue(strategy = GenerationType.IDENTITY)//increment ID
     private Long id;
 
     @Column(nullable = false)
@@ -21,13 +20,13 @@ public class User {
     private String password;
 
     @Column(nullable = false)
-    private String role; // Values: "STUDENT", "ADMIN"
-
+    private String role; // "ADMIN" or "STUDENT"
+    
     // Constructors
     public User() {
         this.role = "STUDENT"; // Default role when a user is created
     }
-
+    
     public User(String fullName, String email, String password, String role) {
         this.fullName = fullName;
         this.email = email;
@@ -35,24 +34,44 @@ public class User {
         this.role = role;
     }
 
-    // Getters and Setters (used by Spring and Thymeleaf forms)
-    public Long getId() { return id; }
+    // Getters and setters
+    public Long getId() {
+        return id;
+    }
 
-    public void setId(Long id) { this.id = id; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getFullName() { return fullName; }
+    public String getFullName() {
+        return fullName;
+    }
 
-    public void setFullName(String fullName) { this.fullName = fullName; }
+    public void setFullName(String fullName) {
+        this.fullName = fullName;
+    }
 
-    public String getEmail() { return email; }
+    public String getEmail() {
+        return email;
+    }
 
-    public void setEmail(String email) { this.email = email; }
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-    public String getPassword() { return password; }
+    public String getPassword() {
+        return password;
+    }
 
-    public void setPassword(String password) { this.password = password; }
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
-    public String getRole() { return role; }
+    public String getRole() {
+        return role;
+    }
 
-    public void setRole(String role) { this.role = role; }
+    public void setRole(String role) {
+        this.role = role;
+    }
 }
