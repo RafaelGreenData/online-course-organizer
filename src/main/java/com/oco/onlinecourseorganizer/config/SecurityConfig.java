@@ -1,59 +1,58 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package com.oco.onlinecourseorganizer.config;
 
 import com.oco.onlinecourseorganizer.service.AppUserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
-/**
- *
- * @author brafa
- */
+@Configuration
+@EnableWebSecurity
 public class SecurityConfig {
+
+    @Autowired
+    private AppUserDetailsService userDetailsService;
     
-    // Password encoder (BCrypt is safe)
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
+    // This bean links Spring Security to our custom AppUserDetailsService and password encoder
     @Bean
-    public BCryptPasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+    public DaoAuthenticationProvider authenticationProvider() {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
+        authProvider.setUserDetailsService(userDetailsService);
+        authProvider.setPasswordEncoder(passwordEncoder);
+        return authProvider;
     }
 
-    // Custom user details service
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return new AppUserDetailsService();
-    }
-
-    // Authentication Manager (needed for login)
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-        return config.getAuthenticationManager();
-    }
-
-    // Main security filter chain
+    // This method sets up which pages require login and how login/logout is handled
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
+                .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/register", "/css/**", "/js/**").permitAll()
-                .requestMatchers("/admin/**").hasAuthority("ADMIN")
-                .requestMatchers("/student/**").hasAuthority("STUDENT")
-                .anyRequest().authenticated()
+                .requestMatchers("/", "/register", "/css/**").permitAll() // public pages
+                .requestMatchers("/admin/**").hasRole("ADMIN") // admin-only URLs
+                .requestMatchers("/student/**").hasRole("STUDENT") // student-only URLs
+                .anyRequest().authenticated() // everything else requires login
                 )
                 .formLogin(form -> form
-                .loginPage("/login").permitAll()
-                .defaultSuccessUrl("/redirect", true)
+                .loginPage("/login") // custom login page
+                .defaultSuccessUrl("/redirect", true) // redirect to dashboard after login
+                .permitAll()
                 )
-                .logout(logout -> logout.logoutSuccessUrl("/login?logout").permitAll());
+                .logout(logout -> logout
+                .logoutSuccessUrl("/") // go to home page on logout
+                .permitAll()
+                );
 
         return http.build();
     }
-    
 }

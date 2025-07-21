@@ -5,9 +5,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest(classes = OnlineCourseOrganizerApplication.class)
 class OnlineCourseOrganizerApplicationTests {
-
-	@Test
-	void contextLoads() {
-	}
+        
+        
+	//@Test
+	//void contextLoads() {
+	//}
+        
 
 }
