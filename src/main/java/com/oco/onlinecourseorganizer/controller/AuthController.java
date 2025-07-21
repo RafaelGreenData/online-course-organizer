@@ -4,8 +4,10 @@
  */
 package com.oco.onlinecourseorganizer.controller;
 
+import com.oco.onlinecourseorganizer.dto.RegisterDTO;
 import com.oco.onlinecourseorganizer.model.AppUser;
 import com.oco.onlinecourseorganizer.model.Role;
+import com.oco.onlinecourseorganizer.repository.AppUserRepository;
 import com.oco.onlinecourseorganizer.service.AppUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -18,9 +20,13 @@ import org.springframework.ui.Model;
  */
 @Controller
 public class AuthController {
+   
     
-    @Autowired
-    private AppUserService userService;
+     @Autowired
+    private AppUserRepository userRepository;
+     
+     @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @GetMapping("/login")
     public String login() {
@@ -28,27 +34,28 @@ public class AuthController {
     }
 
     @GetMapping("/register")
-    public String registerForm(Model model) {
-        model.addAttribute("user", new AppUser());
+    public String showRegisterForm(Model model) {
+        model.addAttribute("registerDTO", new RegisterDTO());
         return "register";
     }
-
+    
+    // Handle form submission
     @PostMapping("/register")
-    public String register(@ModelAttribute("user") AppUser user) {
-        user.setRole(Role.STUDENT); // Only STUDENT can register
-        userService.saveUser(user); // Save with encrypted password
-        return "redirect:/login";
-    }
-
-    @GetMapping("/redirect")
-    public String redirectByRole() {
-        AppUser currentUser = userService.getCurrentUser();
-
-        if (currentUser.getRole() == Role.ADMIN) {
-            return "redirect:/admin/dashboard";
-        } else {
-            return "redirect:/student/dashboard";
+    public String processRegistration(@ModelAttribute("registerDTO") RegisterDTO dto) {
+        // Check if username already exists
+        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
+            return "redirect:/register?error"; // email already used
         }
+
+        AppUser newUser = new AppUser(
+                dto.getEmail(),
+                passwordEncoder.encode(dto.getPassword()),
+                Role.STUDENT
+        );
+
+        userRepository.save(newUser);
+
+        return "redirect:/login?registered";
     }
     
 }
