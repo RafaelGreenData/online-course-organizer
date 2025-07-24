@@ -4,7 +4,9 @@
  */
 package com.oco.onlinecourseorganizer.service;
 
+import com.oco.onlinecourseorganizer.dto.RegisterDTO;
 import com.oco.onlinecourseorganizer.model.AppUser;
+import com.oco.onlinecourseorganizer.model.Role;
 import com.oco.onlinecourseorganizer.repository.AppUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,9 +19,11 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class AppUserService {
+    
     @Autowired
     private AppUserRepository userRepository;
 
+    
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -32,5 +36,14 @@ public class AppUserService {
     public AppUser getCurrentUser() {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         return userRepository.findByEmail(email).orElse(null);
+    }
+    
+    public boolean emailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+    
+    public void registerStudent(RegisterDTO dto) {
+        AppUser student = new AppUser(dto.getEmail(), passwordEncoder.encode(dto.getPassword()), Role.STUDENT);
+        userRepository.save(student);
     }
 }

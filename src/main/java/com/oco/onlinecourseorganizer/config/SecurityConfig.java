@@ -38,7 +38,7 @@ public class SecurityConfig {
         http
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/", "/register", "/css/**").permitAll() // public pages
+                .requestMatchers("/", "/register", "/login", "/css/**").permitAll() // public pages*** add"/error",** !!!!
                 .requestMatchers("/admin/**").hasRole("ADMIN") // admin-only URLs
                 .requestMatchers("/student/**").hasRole("STUDENT") // student-only URLs
                 .anyRequest().authenticated() // everything else requires login

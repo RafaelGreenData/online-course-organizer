@@ -7,13 +7,14 @@ package com.oco.onlinecourseorganizer.controller;
 import com.oco.onlinecourseorganizer.dto.RegisterDTO;
 import com.oco.onlinecourseorganizer.model.AppUser;
 import com.oco.onlinecourseorganizer.model.Role;
-import com.oco.onlinecourseorganizer.repository.AppUserRepository;
 import com.oco.onlinecourseorganizer.service.AppUserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import jakarta.validation.Valid;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 /**
  *
  * @author brafa
@@ -22,12 +23,13 @@ import org.springframework.ui.Model;
 public class AuthController {
    
     
-     @Autowired
-    private AppUserRepository userRepository;
-     
-     @Autowired
-    private PasswordEncoder passwordEncoder;
+    private final AppUserService appUserService;
 
+    public AuthController(AppUserService appUserService) {
+        this.appUserService = appUserService;
+    }
+     
+    
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -35,27 +37,44 @@ public class AuthController {
 
     @GetMapping("/register")
     public String showRegisterForm(Model model) {
-        model.addAttribute("registerDTO", new RegisterDTO());
+        if (!model.containsAttribute("user")) {
+            model.addAttribute("registerDTO", new RegisterDTO());
+        }
+        
         return "register";
     }
     
     // Handle form submission
     @PostMapping("/register")
-    public String processRegistration(@ModelAttribute("registerDTO") RegisterDTO dto) {
-        // Check if username already exists
-        if (userRepository.findByEmail(dto.getEmail()).isPresent()) {
-            return "redirect:/register?error"; // email already used
+    public String registerUser(@ModelAttribute("RegisterDTO") @Valid RegisterDTO userDto,
+            BindingResult result,
+            RedirectAttributes redirectAttributes) {
+        if (result.hasErrors()) {
+            return "register";
         }
 
-        AppUser newUser = new AppUser(
-                dto.getEmail(),
-                passwordEncoder.encode(dto.getPassword()),
-                Role.STUDENT
-        );
+        if (appUserService.emailExists(userDto.getEmail())) {
+            redirectAttributes.addAttribute("emailExists", "true");
+            return "redirect:/register";
+        }
 
-        userRepository.save(newUser);
-
+        appUserService.registerStudent(userDto);
         return "redirect:/login?registered";
+        
+            
+    }
+    
+    @GetMapping("/redirect")
+    public String redirectAfterLogin(Authentication authentication) {
+        AppUser user = (AppUser) authentication.getPrincipal(); // Cast to your custom UserDetails
+
+        if (user.getRole() == Role.ADMIN) {
+            return "redirect:/admin/dashboard";
+        } else if (user.getRole() == Role.STUDENT) {
+            return "redirect:/student/dashboard";
+        }
+
+        return "redirect:/"; // Fallback
     }
     
 }
