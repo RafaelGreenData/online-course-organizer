@@ -30,7 +30,6 @@ public class AppUserDetailsService implements UserDetailsService {
         AppUser user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
 
-        return new User(user.getEmail(), user.getPassword(),
-                Collections.singletonList(new SimpleGrantedAuthority(user.getRole().name())));
+        return user;
     }
 }
