@@ -26,7 +26,7 @@
                         <td th:text="${course.name}"></td>
                         <td th:text="${course.description}"></td>
                         <td>
-                            <a th:href="@{'/admin/courses/modules/' + ${course.id}}" class="btn btn-primary btn-sm">Manage Modules</a>
+                            <a th:href="@{'/admin/courses/' + ${course.id} + '/modules'}" class="btn btn-primary btn-sm">Manage Modules</a>
                             <a th:href="@{'/admin/courses/delete/' + ${course.id}}" class="btn btn-danger btn-sm ms-2">Delete</a>
                         </td>
                     </tr>
