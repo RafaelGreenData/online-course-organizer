@@ -31,4 +31,5 @@ public class CourseModuleService {
     public void deleteModule(Long id) {
         moduleRepository.deleteById(id);
     }
+    
 }
