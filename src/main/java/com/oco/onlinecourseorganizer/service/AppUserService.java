@@ -46,4 +46,8 @@ public class AppUserService {
         AppUser student = new AppUser(dto.getEmail(), passwordEncoder.encode(dto.getPassword()), Role.STUDENT);
         userRepository.save(student);
     }
+    
+    public AppUser findByEmail(String email) {
+        return userRepository.findByEmail(email).orElse(null);
+    }
 }

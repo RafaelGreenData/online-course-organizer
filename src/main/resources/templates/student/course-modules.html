@@ -14,11 +14,15 @@
 
             <div class="list-group" th:if="${!#lists.isEmpty(modules)}">
                 <div class="list-group-item" th:each="module : ${modules}">
-                    <h5 th:text="${module.title}">Module Title</h5>
+                    <h5>
+                        <span th:text="${module.title}"></span>
+                        <span class="badge bg-success ms-2" th:if="${completedMap[module.id]}">Completed</span>
+                    </h5>
                     <p th:text="${module.description}">Module Description</p>
                     <div th:if="${module.type.name() == 'VIDEO'}">
                         <p><strong>Type:</strong> Video</p>
-                        <a th:href="${module.videoUrl}" class="btn btn-sm btn-primary" target="_blank">Watch Video</a>
+                        <a th:href="@{'/student/courses/modules/' + ${module.id}}"
+                           class="btn btn-sm btn-primary">Open Module</a>
                     </div>
                     <div th:if="${module.type.name() == 'QUIZ'}">
                         <p><strong>Type:</strong> Quiz</p>

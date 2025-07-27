@@ -15,6 +15,7 @@ public class CourseModule {
     @Enumerated(EnumType.STRING)
     private ModuleType type; // VIDEO or QUIZ
 
+    @Column(length = 1000)
     private String videoUrl;
 
     @ManyToOne

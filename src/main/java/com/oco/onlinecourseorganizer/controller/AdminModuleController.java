@@ -49,6 +49,11 @@ public class AdminModuleController {
             return "admin/module-form";
         }
 
+        //Convert YouTube link to proper embed format
+        if (module.getType() == CourseModule.ModuleType.VIDEO) {
+            module.setVideoUrl(convertToEmbedUrl(module.getVideoUrl()));
+        }
+
         module.setCourse(courseService.getCourseById(courseId));
         moduleService.saveModule(module);
         return "redirect:/admin/courses/" + courseId + "/modules";
@@ -67,5 +72,31 @@ public class AdminModuleController {
         CourseModule module = moduleService.getModuleById(moduleId);
         model.addAttribute("module", module);
         return "admin/module-view";
+    }
+    
+    private String convertToEmbedUrl(String url) {
+        if (url == null) {
+            return null;
+        }
+
+        // Strip iframe wrapper if pasted
+        if (url.contains("iframe") && url.contains("src=")) {
+            // Extract the src content between quotes
+            int start = url.indexOf("src=\"") + 5;
+            int end = url.indexOf("\"", start);
+            return url.substring(start, end);
+        }
+
+        // Convert youtu.be links
+        if (url.contains("youtu.be/")) {
+            return url.replace("https://youtu.be/", "https://www.youtube.com/embed/");
+        }
+
+        // Convert watch?v= links
+        if (url.contains("watch?v=")) {
+            return url.replace("watch?v=", "embed/");
+        }
+
+        return url.trim(); // assume it's already a clean embed URL
     }
 }
