@@ -6,13 +6,14 @@
         <script>
             function toggleVideoField() {
             const type = document.getElementById("type").value;
-            const videoField = document.getElementById("videoUrlGroup");
+            const videoGroup = document.getElementById("videoUrlGroup");
             const videoInput = document.getElementById("videoUrl");
+
             if (type === "VIDEO") {
-            videoField.style.display = "block";
+            videoGroup.style.display = "block";
             videoInput.required = true;
             } else {
-            videoField.style.display = "none";
+            videoGroup.style.display = "none";
             videoInput.required = false;
             videoInput.value = "";
             }
@@ -26,28 +27,28 @@
     </head>
     <body>
         <div class="container mt-5">
-            <div class="card shadow-sm">
+            <div class="card shadow rounded-3">
                 <div class="card-body">
                     <h2 class="card-title mb-4">Create New Module</h2>
 
-                    <!-- Show error message if validation fails -->
+                    <!-- Error Message -->
                     <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
 
-                    <form th:action="@{'/admin/courses/' + ${module.course.id} + '/modules/save'}"
-                          th:object="${module}" method="post">
-
+                    <!-- Module Form -->
+                    <form th:action="@{'/admin/courses/' + ${module.course.id} + '/modules/save'}" th:object="${module}" method="post">
+                        <!-- Title -->
                         <div class="mb-3">
                             <label for="title" class="form-label">Module Title</label>
-                            <input type="text" id="title" th:field="*{title}" class="form-control"
-                                   placeholder="Enter module title" required/>
+                            <input type="text" id="title" th:field="*{title}" class="form-control" placeholder="Enter module title" required />
                         </div>
 
+                        <!-- Description -->
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea id="description" th:field="*{description}" class="form-control" rows="4"
-                                      placeholder="Brief module summary..." required></textarea>
+                            <textarea id="description" th:field="*{description}" class="form-control" rows="4" placeholder="Brief module summary..." required></textarea>
                         </div>
 
+                        <!-- Type -->
                         <div class="mb-3">
                             <label for="type" class="form-label">Module Type</label>
                             <select id="type" th:field="*{type}" class="form-select" required>
@@ -55,20 +56,24 @@
                             </select>
                         </div>
 
-                        <!-- Dynamically displayed only if VIDEO is selected -->
+                        <!-- Video URL (shown only if type = VIDEO) -->
                         <div class="mb-3" id="videoUrlGroup" style="display: none;">
                             <label for="videoUrl" class="form-label">YouTube Video URL</label>
-                            <input type="text" id="videoUrl" th:field="*{videoUrl}" class="form-control" placeholder="Paste YouTube embed link">
-
+                            <input type="text" id="videoUrl" th:field="*{videoUrl}" class="form-control" placeholder="Paste YouTube embed link" />
                         </div>
 
+                        <!-- Form Buttons -->
                         <div class="d-flex justify-content-between">
-                            <a th:href="@{'/admin/courses/' + ${module.course.id} + '/modules'}"
-                               class="btn btn-secondary">Cancel</a>
+                            <a th:href="@{'/admin/courses/' + ${module.course.id} + '/modules'}" class="btn btn-outline-secondary">Cancel</a>
                             <button type="submit" class="btn btn-success">Save Module</button>
                         </div>
                     </form>
                 </div>
+            </div>
+
+            <!-- Back to Dashboard -->
+            <div class="mt-4">
+                <a th:href="@{/admin/dashboard}" class="btn btn-outline-secondary">← Back to Dashboard</a>
             </div>
         </div>
     </body>

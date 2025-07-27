@@ -8,13 +8,13 @@
         <div class="container mt-5">
             <h2 class="mb-4">My Enrolled Courses</h2>
 
-            <!-- If no courses enrolled -->
+            <!-- No courses -->
             <div th:if="${#lists.isEmpty(enrollments)}" class="alert alert-info">
                 <p>You haven't enrolled in any courses yet.</p>
                 <a href="/student/courses/available" class="btn btn-primary">Browse Courses</a>
             </div>
 
-            <!-- Course Cards -->
+            <!-- Enrolled courses -->
             <div class="row row-cols-1 row-cols-md-2 g-4" th:if="${!#lists.isEmpty(enrollments)}">
                 <div class="col" th:each="enrollment : ${enrollments}">
                     <div class="card shadow-sm h-100 border-success">
@@ -22,7 +22,7 @@
                             <h5 class="card-title" th:text="${enrollment.course.name}">Course Title</h5>
                             <p class="card-text" th:text="${enrollment.course.description}">Course description</p>
 
-                            <!-- Progress Bar -->
+                            <!-- Progress bar -->
                             <label class="mb-1">Progress</label>
                             <div class="progress mb-3">
                                 <div class="progress-bar bg-success" role="progressbar"
@@ -31,7 +31,7 @@
                                 </div>
                             </div>
 
-                            <!-- Buttons: View Modules + Unenroll -->
+                            <!-- Action buttons -->
                             <div class="d-flex justify-content-between align-items-center mb-2">
                                 <a th:href="@{'/student/courses/' + ${enrollment.course.id} + '/modules'}"
                                    class="btn btn-success">View Modules</a>
@@ -43,7 +43,7 @@
                                 </form>
                             </div>
 
-                            <!-- Show certificate button only if course is complete -->
+                            <!-- Certificate link -->
                             <div th:if="${courseCompletionMap[enrollment.course.id]}" class="text-center">
                                 <a th:href="@{'/student/courses/' + ${enrollment.course.id} + '/certificate'}"
                                    class="btn btn-outline-primary btn-sm">Download Certificate</a>
@@ -53,8 +53,7 @@
                 </div>
             </div>
 
-            <!-- Back to dashboard -->
-            <a href="/dashboard" class="btn btn-secondary mt-4">Back to Dashboard</a>
+            <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back to Dashboard</a>
         </div>
     </body>
 </html>

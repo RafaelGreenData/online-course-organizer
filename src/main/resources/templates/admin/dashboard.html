@@ -7,22 +7,93 @@
     <body>
         <div class="container mt-5">
             <h1 class="mb-4">Welcome, Admin!</h1>
+
+            <!-- Logout -->
             <form th:action="@{/logout}" method="post">
                 <button type="submit" class="btn btn-outline-danger">Logout</button>
             </form>
-            <p class="lead">This is your admin dashboard. Use the links below to manage your content:</p>
 
-            <div class="row">
+            <p class="lead">This is your admin dashboard. Use the links below to manage the platform:</p>
+
+            <div class="row g-4">
+
+                <!-- Course Management -->
                 <div class="col-md-6">
                     <div class="card border-primary shadow rounded-3">
                         <div class="card-body">
                             <h5 class="card-title">Course Management</h5>
-                            <p class="card-text">Create, update, and delete courses.</p>
+                            <p class="card-text">Create, update, and delete courses and modules.</p>
                             <a href="/admin/courses" class="btn btn-primary">Manage Courses</a>
                         </div>
                     </div>
                 </div>
-                <!-- Future Cards (e.g., Certificate Management, Users, etc.) -->
+
+                <!-- Certificate Management -->
+                <div class="col-md-6">
+                    <div class="card border-success shadow rounded-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Certificate Management</h5>
+                            <p class="card-text">View and manage student course certificates.</p>
+                            <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Management -->
+                <div class="col-md-6">
+                    <div class="card border-warning shadow rounded-3">
+                        <div class="card-body">
+                            <h5 class="card-title">User Management</h5>
+                            <p class="card-text">Manage registered users and their roles.</p>
+                            <a href="/admin/users" class="btn btn-warning">Manage Users</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Study Groups (Coming Soon) -->
+                <div class="col-md-6">
+                    <div class="card border-secondary shadow rounded-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Study Groups</h5>
+                            <p class="card-text">Monitor and manage student study events.</p>
+                            <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics (Coming Soon) -->
+                <div class="col-md-6">
+                    <div class="card border-secondary shadow rounded-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Analytics Dashboard</h5>
+                            <p class="card-text">Track platform activity and student progress trends.</p>
+                            <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Course Feedback (Coming Soon) -->
+                <div class="col-md-6">
+                    <div class="card border-secondary shadow rounded-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Course Feedback</h5>
+                            <p class="card-text">Read and respond to student reviews and suggestions.</p>
+                            <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Announcements (Coming Soon) -->
+                <div class="col-md-6">
+                    <div class="card border-secondary shadow rounded-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Admin Notices</h5>
+                            <p class="card-text">Post platform-wide announcements for students.</p>
+                            <button class="btn btn-outline-secondary" disabled>Coming Soon</button>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </div>
     </body>

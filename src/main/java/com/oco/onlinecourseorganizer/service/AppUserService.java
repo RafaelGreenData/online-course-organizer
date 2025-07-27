@@ -8,6 +8,7 @@ import com.oco.onlinecourseorganizer.dto.RegisterDTO;
 import com.oco.onlinecourseorganizer.model.AppUser;
 import com.oco.onlinecourseorganizer.model.Role;
 import com.oco.onlinecourseorganizer.repository.AppUserRepository;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -49,5 +50,9 @@ public class AppUserService {
     
     public AppUser findByEmail(String email) {
         return userRepository.findByEmail(email).orElse(null);
+    }
+    
+    public List<AppUser> getAllUsers() {
+        return userRepository.findAll();
     }
 }

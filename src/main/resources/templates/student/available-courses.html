@@ -8,16 +8,16 @@
         <div class="container mt-5">
             <h2 class="mb-4">Available Courses</h2>
 
-            <div th:if="${#lists.isEmpty(courses)}">
-                <p>No available courses at the moment. You're all caught up!</p>
+            <div th:if="${#lists.isEmpty(courses)}" class="alert alert-info">
+                No available courses at the moment. You're all caught up!
             </div>
 
             <div class="row row-cols-1 row-cols-md-2 g-4" th:if="${!#lists.isEmpty(courses)}">
                 <div class="col" th:each="course : ${courses}">
-                    <div class="card shadow-sm">
+                    <div class="card shadow-sm border-primary h-100">
                         <div class="card-body">
                             <h5 class="card-title" th:text="${course.name}">Course Title</h5>
-                            <p class="card-text" th:text="${course.description}">Course description</p>
+                            <p class="card-text" th:text="${course.description}">Course Description</p>
                             <form th:action="@{'/student/courses/' + ${course.id} + '/enroll'}" method="post">
                                 <button type="submit" class="btn btn-primary">Enroll</button>
                             </form>
@@ -26,7 +26,7 @@
                 </div>
             </div>
 
-            <a href="/dashboard" class="btn btn-secondary mt-4">Back to Dashboard</a>
+            <a href="/dashboard" class="btn btn-outline-secondary mt-4">← Back to Dashboard</a>
         </div>
     </body>
 </html>

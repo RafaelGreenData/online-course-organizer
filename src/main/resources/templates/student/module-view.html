@@ -6,37 +6,38 @@
     </head>
     <body>
         <div class="container mt-5">
-            <div class="card shadow-sm">
+            <div class="card shadow rounded-3">
                 <div class="card-body">
-                    <h3 class="card-title" th:text="${module.title}">Module Title</h3>
-                    <p class="card-text" th:text="${module.description}">Module Description</p>
+                    <h3 class="card-title mb-3" th:text="${module.title}">Module Title</h3>
+                    <p class="text-muted" th:text="${module.description}">Module Description</p>
 
+                    <!-- VIDEO MODULE -->
                     <div th:if="${module.type.name() == 'VIDEO'}">
                         <p><strong>Type:</strong> Video</p>
-                        <div class="ratio ratio-16x9 mb-3">
-                            <iframe th:attr="src=${module.videoUrl}" width="100%" height="360" frameborder="0" allowfullscreen></iframe>
-
+                        <div class="ratio ratio-16x9 mb-4">
+                            <iframe th:attr="src=${module.videoUrl}" frameborder="0" allowfullscreen></iframe>
                         </div>
 
-                        <!-- Show completion logic -->
                         <div th:if="${!isCompleted}">
                             <form th:action="@{'/student/courses/modules/' + ${module.id} + '/complete'}" method="post">
                                 <button type="submit" class="btn btn-success">Mark as Completed</button>
                             </form>
                         </div>
-                        <div th:if="${isCompleted}">
-                            <p class="text-success mt-3">You have already completed this module ✅</p>
+
+                        <div th:if="${isCompleted}" class="text-success mt-3">
+                            ✅ You have already completed this module.
                         </div>
                     </div>
 
+                    <!-- QUIZ MODULE -->
                     <div th:if="${module.type.name() == 'QUIZ'}">
                         <p><strong>Type:</strong> Quiz</p>
                         <button class="btn btn-secondary" disabled>Quiz feature coming soon</button>
                     </div>
 
-                    <a th:href="@{'/student/courses/' + ${module.course.id} + '/modules'}" class="btn btn-outline-secondary mt-4">
-                        Back to Modules
-                    </a>
+                    <!-- Back to Course Modules -->
+                    <a th:href="@{'/student/courses/' + ${module.course.id} + '/modules'}"
+                       class="btn btn-outline-secondary mt-4">← Back to Modules</a>
                 </div>
             </div>
         </div>
