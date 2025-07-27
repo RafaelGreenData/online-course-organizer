@@ -14,6 +14,8 @@ public class OnlineCourseOrganizerApplication {
     public static void main(String[] args) {
         
         //System.out.println("Admins password is:" + new BCryptPasswordEncoder().encode("admin123"));
+        //System.out.println("✅ Entered /student/certificates controller method");
+      
     
         SpringApplication.run(OnlineCourseOrganizerApplication.class, args);
     }

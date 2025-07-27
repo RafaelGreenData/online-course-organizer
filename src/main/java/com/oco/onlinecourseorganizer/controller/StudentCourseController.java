@@ -5,6 +5,7 @@ import com.oco.onlinecourseorganizer.model.Course;
 import com.oco.onlinecourseorganizer.model.CourseEnrollment;
 import com.oco.onlinecourseorganizer.model.CourseModule;
 import com.oco.onlinecourseorganizer.service.AppUserService;
+import com.oco.onlinecourseorganizer.service.CertificateService;
 import com.oco.onlinecourseorganizer.service.CourseModuleService;
 import com.oco.onlinecourseorganizer.service.CourseService;
 import com.oco.onlinecourseorganizer.service.EnrollmentService;
@@ -17,6 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 
 @Controller
 @RequestMapping("/student/courses")
@@ -26,18 +33,22 @@ public class StudentCourseController {
     private final EnrollmentService enrollmentService;
     private final AppUserService appUserService;
     private final CourseModuleService courseModuleService;
-    private final ModuleCompletionService moduleCompletionService;
+    private final ModuleCompletionService completionService;
+    private final CertificateService certificateService;
 
-    public StudentCourseController(CourseService courseService,
+    public StudentCourseController(
+            CourseService courseService,
             EnrollmentService enrollmentService,
             AppUserService appUserService,
             CourseModuleService courseModuleService,
-            ModuleCompletionService moduleCompletionService) {
+            ModuleCompletionService completionService,
+            CertificateService certificateService) {
         this.courseService = courseService;
         this.enrollmentService = enrollmentService;
         this.appUserService = appUserService;
         this.courseModuleService = courseModuleService;
-        this.moduleCompletionService = moduleCompletionService;
+        this.completionService = completionService;
+        this.certificateService = certificateService;
     }
 
     // Show all courses the student has NOT yet enrolled in
@@ -66,13 +77,36 @@ public class StudentCourseController {
         return "redirect:/student/courses/my-courses";
     }
 
-    // Show all courses the student has enrolled in
     @GetMapping("/my-courses")
     public String showMyCourses(Model model) {
-        AppUser student = appUserService.getCurrentUser();
+        AppUser student = appUserService.getCurrentUser();  // Get the currently logged-in student
+
         List<CourseEnrollment> enrollments = enrollmentService.getEnrolledCourses(student);
+
+        // Maps to hold progress and certificate eligibility
+        Map<Long, Integer> courseProgressMap = new HashMap<>();
+        Map<Long, Boolean> courseCompletionMap = new HashMap<>();
+
+        for (CourseEnrollment enrollment : enrollments) {
+            Course course = enrollment.getCourse();
+            List<CourseModule> modules = courseModuleService.getModulesByCourseId(course.getId());
+
+            int totalModules = modules.size();
+            int completed = (int) modules.stream()
+                    .filter(module -> completionService.isModuleCompleted(student, module))
+                    .count();
+
+            int progress = totalModules == 0 ? 0 : (int) ((completed * 100.0) / totalModules);
+
+            courseProgressMap.put(course.getId(), progress);
+            courseCompletionMap.put(course.getId(), completed == totalModules);
+        }
+
         model.addAttribute("enrollments", enrollments);
-        return "student/my-courses";
+        model.addAttribute("courseProgressMap", courseProgressMap);
+        model.addAttribute("courseCompletionMap", courseCompletionMap);
+
+        return "student/my-courses";  // This will render the my-courses.html template
     }
     
     @PostMapping("/{courseId}/unenroll")
@@ -104,7 +138,7 @@ public class StudentCourseController {
         // Map of moduleId -> isCompleted
         Map<Long, Boolean> completedMap = new HashMap<>();
         for (CourseModule module : modules) {
-            boolean isCompleted = moduleCompletionService.isModuleCompleted(student, module);
+            boolean isCompleted = completionService.isModuleCompleted(student, module);
             completedMap.put(module.getId(), isCompleted);
         }
 
@@ -118,7 +152,7 @@ public class StudentCourseController {
     public String markModuleAsCompleted(@PathVariable Long moduleId, Principal principal) {
         AppUser student = appUserService.findByEmail(principal.getName());
         CourseModule module = courseModuleService.getModuleById(moduleId);
-        moduleCompletionService.markAsCompleted(student, module);
+        completionService.markAsCompleted(student, module);
         return "redirect:/student/courses/modules/" + moduleId;
     }
     
@@ -127,12 +161,27 @@ public class StudentCourseController {
         CourseModule module = courseModuleService.getModuleById(moduleId);
         AppUser student = appUserService.getCurrentUser();
 
-        boolean isCompleted = moduleCompletionService.isModuleCompleted(student, module);
+        boolean isCompleted = completionService.isModuleCompleted(student, module);
 
         model.addAttribute("module", module);
         model.addAttribute("isCompleted", isCompleted);
 
         return "student/module-view"; // This will load module-view.html
     }
+    
+    @GetMapping("/{courseId}/certificate")
+    public ResponseEntity<Resource> downloadCertificate(@PathVariable Long courseId, Principal principal) {
+        AppUser student = appUserService.findByEmail(principal.getName());
 
+        if (!completionService.isCourseCompletedByStudent(courseId, student.getId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+
+        ByteArrayResource certificate = certificateService.generateCertificate(courseId, student);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=certificate.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(certificate);
+    }
 }

@@ -11,4 +11,5 @@ public interface ModuleCompletionRepository extends JpaRepository<ModuleCompleti
 
     // Check if a student has completed a specific module
     Optional<ModuleCompletion> findByStudentAndModule(AppUser student, CourseModule module);
+    boolean existsByStudentIdAndModuleId(Long studentId, Long moduleId);
 }
